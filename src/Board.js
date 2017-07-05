@@ -130,16 +130,18 @@
     // --------------------------------------------------------------
     //
     // test if a specific column on this board contains a conflict
-    hasColConflictAt: function(colIndex, colArray) {
+    hasColConflictAt: function(colIndex) {
       //input is a column number, and an array of all columns
-      var counter = 0;  
+      var counter, boardSize;
+      boardSize = this.get('n');
+      counter = 0;  
       
       // if (colArray[colIndex] === 1) {//has conflict)
       //   counter++;
       // }
-      for (var i = 0; i < colArray.length; i++) {
+      for (var i = 0; i < boardSize; i++) {
         //Check to see if element is (0 || 1)
-        if (colArray[colIndex][i] === 1) {
+        if ( this.get(i)[colIndex] === 1) {
           // add to counter
           counter++;
         }
@@ -153,30 +155,13 @@
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      var boardSize, columnsArray, rowsArray;
-
+      var boardSize;
       boardSize = this.get('n');
-      rowsArray = [];
-      for (var i = 0; i < boardSize; i++) {
-        rowsArray.push(this.get(i));
-      }
-      
-      
-      //needs to generate arrays of columns
-      columnsArray = [];
-      for (var i = 0; i < boardSize; i++) {
-        var newColumn = [];
-        for (var j = 0; j < boardSize; j++) {
-          newColumn.push(rowsArray[j][i]); 
-        }
-        columnsArray.push(newColumn);
-      }
- 
       
       //test if each col has a conflict
       for (var i = 0; i < boardSize; i++) {
         //see if row has conflict
-        if ( this.hasColConflictAt(i, columnsArray) ) {
+        if ( this.hasColConflictAt(i) ) {
           //if it does, return true
           return true;
         }
