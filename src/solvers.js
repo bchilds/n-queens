@@ -16,7 +16,40 @@
 
 
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
+  //soultion is going to be an array of arrays 
+  //Input is always the board size
+  var solution, newBoard;
+  solution = [];
+  newBoard = new Board({'n': n});
+  // i = 0;
+  
+  // while (i < n) {
+  //   var newRow = new Array(n).fill(0);
+  //   newRow[i] = 1;
+  //   solution.push(newRow);
+  //   i++;
+  
+  //will implement row by row
+  //iterate through n rows
+    //check for column conflicts
+    //if no conflict, toggle rook and move to next row
+  for (var i = 0; i < n; i++) {
+    for ( var j = 0; j < n; j++) {
+      newBoard.togglePiece(i, j); 
+      if ( newBoard.hasColConflictAt(j) ) { 
+        newBoard.togglePiece(i, j); 
+      } else {
+        break;
+      }
+    }
+  }
+  
+  // }
+  //The solution will be a visual representation of the board that finds a valid solution that represent 8 x 8
+  
+  for ( var i = 0; i < n; i++ ) {
+    solution.push(newBoard.get(i));
+  }
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution;
@@ -32,7 +65,39 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var solution, newBoard;
+  solution = [];
+  newBoard = new Board({'n': n});
+  // i = 0;
+  
+  // while (i < n) {
+  //   var newRow = new Array(n).fill(0);
+  //   newRow[i] = 1;
+  //   solution.push(newRow);
+  //   i++;
+  
+  //will implement row by row
+  //iterate through n rows
+    //check for column conflicts
+    //if no conflict, toggle rook and move to next row
+  for (var i = 0; i < n; i++) {
+    for ( var j = 0; j < n; j++) {
+      newBoard.togglePiece(i, j); 
+      if ( newBoard.hasColConflictAt(j) || newBoard.hasAnyMajorDiagonalConflicts() || newBoard.hasAnyMinorDiagonalConflicts() ) { 
+        newBoard.togglePiece(i, j); 
+      } else {
+        break;
+      }
+    }
+  }
+  
+  // }
+  //The solution will be a visual representation of the board that finds a valid solution that represent 8 x 8
+  
+  for ( var i = 0; i < n; i++ ) {
+    solution.push(newBoard.get(i));
+  }
+
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
