@@ -86,6 +86,7 @@
       counter = 0;
       row = this.get(rowIndex);
       
+      
       //Iterate across the row 
       for (var i = 0; i < row.length; i++) {
         //Check to see if element is (0 || 1)
@@ -192,15 +193,26 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      //
-      //return false;
+      var boardSize = this.get('n');
+      var colIndex = majorDiagonalColumnIndexAtFirstRow;
+      var counter = 0;
+      for (var i = 0; i < boardSize; i++) {
+        if (this._isInBounds(i, colIndex) && this.get(i)[colIndex] === 1) {
+          counter++; 
+        }
+        if (counter > 1) {
+          return true;       
+        }
+        colIndex++;
+      }
+      return false;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
       var boardSize = this.get('n');
       //iterate across top row indices
-      for (var i = 0; i < n; i++) {
+      for (var i = this._getFirstRowColumnIndexForMajorDiagonalOn(boardSize - 1, 0); i < boardSize; i++) {
         //call hasMajorDiagonalConflictAt for each index
 
         if (this.hasMajorDiagonalConflictAt(i)) {
@@ -219,12 +231,30 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
+      var boardSize = this.get('n');
+      var colIndex = minorDiagonalColumnIndexAtFirstRow;
+      var counter = 0;
+      for (var i = 0; i < boardSize; i++) {
+        if (this._isInBounds(i, colIndex) && this.get(i)[colIndex] === 1) {
+          counter++; 
+        }
+        if (counter > 1) {
+          return true;       
+        }
+        colIndex--;
+      }
       return false; // fixme
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      var boardSize = this.get('n');
+      for (var i = 0; i < this._getFirstRowColumnIndexForMinorDiagonalOn(boardSize - 1, boardSize - 1); i++) {
+        if (this.hasMinorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
+      return false; 
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
