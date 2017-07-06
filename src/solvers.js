@@ -57,7 +57,26 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount, newBoard; 
+  solutionCount = 0;
+  newBoard = new Board({'n': n});  
+
+  var checkSol = function (board, rowIndex, disallowed, solutionCount) {
+    //insert more content here
+    return solutionCount;
+  };
+
+  
+  for (var rowIndex = 0; rowIndex < n; rowIndex++) {
+    solutionCount = checkSol(newBoard, rowIndex, undefined, solutionCount);
+  }
+  // create  a new recursive function
+  //its inputs will be the board, rowIndex, && array of illegal columns, solution count
+  //with all of these inputs we will know what row to start on and what indices not to use
+  //will return solution count
+  
+  //base cases  (i + 1 === n) && there are no conflicts || there is a conflict
+  //recursive cases i < n
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
