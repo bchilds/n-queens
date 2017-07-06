@@ -121,43 +121,79 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution, newBoard;
+  var solution, newBoard, foundSolution;
   solution = [];
   newBoard = new Board({'n': n});
- 
-  // i = 0;
+  foundSolution = false;
+
+  var checkSol = function (board, rowIndex, disallowed) {
+    //check to see if rowIndex + 1 >= n (is this the last row?)
+    if ( rowIndex + 1 === n ) {
+    //if yes... 
+      //go across the last row if we haven't already
+      for (var colIndex = 0; colIndex < n; colIndex++) {
+        //check for failures/successes
+        board.togglePiece(rowIndex, colIndex);
+        if ( board.hasColConflictAt(colIndex) || board.hasMajorDiagonalConflictAt(board._getFirstRowColumnIndexForMajorDiagonalOn(rowIndex, colIndex)) || board.hasMinorDiagonalConflictAt(board._getFirstRowColumnIndexForMinorDiagonalOn(rowIndex, colIndex)) ) {
+          board.togglePiece(rowIndex, colIndex);
+        } else {
+          //stop, we have a valid solution
+          return true;
+        }
+      }
+      return false;
+    } else { 
+      //if no...
+      //iterate across current Row (colIndex)
+      for (var colIndex = 0; colIndex < n; colIndex++) {
+        //if we are allowed to use this column...
+        if (!disallowed.includes(colIndex)) {
+          board.togglePiece(rowIndex, colIndex);
   
-  // while (i < n) {
-  //   var newRow = new Array(n).fill(0);
-  //   newRow[i] = 1;
-  //   solution.push(newRow);
-  //   i++;
-  
-  //will implement row by row
-  //iterate through n rows
-    //check for column conflicts
-    //if no conflict, toggle rook and move to next row
-  for (var i = 0; i < n; i++) {
-    for ( var j = 0; j < n; j++) {
-      newBoard.togglePiece(i, j); 
-      if ( newBoard.hasColConflictAt(j) || newBoard.hasAnyMajorDiagonalConflicts() || newBoard.hasAnyMinorDiagonalConflicts() ) { 
-        newBoard.togglePiece(i, j); 
-      } else {
-        break;
+          if (!board.hasMajorDiagonalConflictAt(board._getFirstRowColumnIndexForMajorDiagonalOn(rowIndex, colIndex)) && !board.hasMinorDiagonalConflictAt(board._getFirstRowColumnIndexForMinorDiagonalOn(rowIndex, colIndex)) ) {
+            //toggle piece at current rowIndex/colIndex
+            //recurse this function to check next row's spots
+            var disallowedCopy = disallowed.slice();
+            disallowedCopy.push(colIndex);
+            foundSolution = checkSol( board, rowIndex + 1, disallowedCopy);
+            if (foundSolution) { break; }
+            //toggle piece off
+            board.togglePiece(rowIndex, colIndex);
+          } else {
+            board.togglePiece(rowIndex, colIndex);
+          }
+
+        } 
       }
     }
+
+    return foundSolution;
+  };
+
+  if (n === 0) {
+    //do nothing
+  } else if (n === 1) {
+    newBoard.togglePiece(0, 0); //this is an edge case
+    foundSolution = true;
+  } else {
+    for (var colIndex = 0; colIndex < n; colIndex++) {
+      rowIndex = 0;
+      newBoard.togglePiece(0, colIndex);
+      foundSolution = checkSol(newBoard, rowIndex + 1, [colIndex]);
+      if (foundSolution) { break; }
+      newBoard.togglePiece(0, colIndex);
+    }
   }
-  
-  // }
-  //The solution will be a visual representation of the board that finds a valid solution that represent 8 x 8
   
   for ( var i = 0; i < n; i++ ) {
     solution.push(newBoard.get(i));
   }
 
-
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  if (foundSolution) {
+    console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  }
   return solution;
+
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
