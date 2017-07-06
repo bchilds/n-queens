@@ -57,18 +57,46 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount, newBoard; 
+  var solutionCount, newBoard, rowIndex; 
   solutionCount = 0;
   newBoard = new Board({'n': n});  
 
   var checkSol = function (board, rowIndex, disallowed, solutionCount) {
-    //insert more content here
+    //check to see if rowIndex + 1 >= n (is this the last row?)
+    if ( rowIndex + 1 === n ) {
+    //if yes... 
+      //go across the last row if we haven't already
+        //check for failures/successes
+        //return solutionCount
+
+    } else { 
+      //if no...
+      //iterate across current Row (colIndex)
+      for (var colIndex = 0; colIndex < n; colIndex++) {
+        //if we are allowed to use this column...
+        if (!disallowed.include(colIndex)) {
+          //toggle piece at current rowIndex/colIndex
+          board.togglePiece(rowIndex, colIndex);
+          //recurse this function to check next row's spots
+          solutionCount = checkSol( board, rowIndex + 1, disallowed.slice().push(colIndex), solutionCount );
+          //toggle piece off
+          board.togglePiece(rowIndex, colIndex);
+        } 
+      }
+    }
+
     return solutionCount;
   };
 
-  
-  for (var rowIndex = 0; rowIndex < n; rowIndex++) {
-    solutionCount = checkSol(newBoard, rowIndex, undefined, solutionCount);
+  if (n === 1) {
+    solutionCount = 1;
+  } else {
+    for (var colIndex = 0; colIndex < n; colIndex++) {
+      rowIndex = 0;
+      newBoard.togglePiece(0, colIndex);
+      solutionCount = checkSol(newBoard, rowIndex + 1, [colIndex], solutionCount);
+      newBoard.togglePiece(0, colIndex);
+    }
   }
   // create  a new recursive function
   //its inputs will be the board, rowIndex, && array of illegal columns, solution count
@@ -87,6 +115,7 @@ window.findNQueensSolution = function(n) {
   var solution, newBoard;
   solution = [];
   newBoard = new Board({'n': n});
+ 
   // i = 0;
   
   // while (i < n) {
