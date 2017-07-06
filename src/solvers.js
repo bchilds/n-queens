@@ -66,19 +66,28 @@ window.countNRooksSolutions = function(n) {
     if ( rowIndex + 1 === n ) {
     //if yes... 
       //go across the last row if we haven't already
+      for (var colIndex = 0; colIndex < n; colIndex++) {
         //check for failures/successes
-        //return solutionCount
-
+        board.togglePiece(rowIndex, colIndex);
+        if (board.hasColConflictAt(colIndex)) {
+          board.togglePiece(rowIndex, colIndex);
+        } else {
+          board.togglePiece(rowIndex, colIndex);
+          solutionCount++;
+        }
+      }
     } else { 
       //if no...
       //iterate across current Row (colIndex)
       for (var colIndex = 0; colIndex < n; colIndex++) {
         //if we are allowed to use this column...
-        if (!disallowed.include(colIndex)) {
+        if (!disallowed.includes(colIndex)) {
           //toggle piece at current rowIndex/colIndex
           board.togglePiece(rowIndex, colIndex);
           //recurse this function to check next row's spots
-          solutionCount = checkSol( board, rowIndex + 1, disallowed.slice().push(colIndex), solutionCount );
+          var disallowedCopy = disallowed.slice();
+          disallowedCopy.push(colIndex);
+          solutionCount = checkSol( board, rowIndex + 1, disallowedCopy, solutionCount );
           //toggle piece off
           board.togglePiece(rowIndex, colIndex);
         } 
@@ -153,7 +162,62 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount, newBoard, rowIndex; 
+  solutionCount = 0;
+  newBoard = new Board({'n': n});  
+
+  var checkSol = function (board, rowIndex, disallowed, solutionCount) {
+    //check to see if rowIndex + 1 >= n (is this the last row?)
+    if ( rowIndex + 1 === n ) {
+    //if yes... 
+      //go across the last row if we haven't already
+      for (var colIndex = 0; colIndex < n; colIndex++) {
+        //check for failures/successes
+        board.togglePiece(rowIndex, colIndex);
+        if ( board.hasColConflictAt(colIndex) || board.hasMajorDiagonalConflictAt(board._getFirstRowColumnIndexForMajorDiagonalOn(rowIndex, colIndex)) || board.hasMinorDiagonalConflictAt(board._getFirstRowColumnIndexForMinorDiagonalOn(rowIndex, colIndex)) ) {
+          board.togglePiece(rowIndex, colIndex);
+        } else {
+          board.togglePiece(rowIndex, colIndex);
+          solutionCount++;
+        }
+      }
+    } else { 
+      //if no...
+      //iterate across current Row (colIndex)
+      for (var colIndex = 0; colIndex < n; colIndex++) {
+        //if we are allowed to use this column...
+        if (!disallowed.includes(colIndex)) {
+          board.togglePiece(rowIndex, colIndex);
+  
+          if (!board.hasMajorDiagonalConflictAt(board._getFirstRowColumnIndexForMajorDiagonalOn(rowIndex, colIndex)) && !board.hasMinorDiagonalConflictAt(board._getFirstRowColumnIndexForMinorDiagonalOn(rowIndex, colIndex)) ) {
+            //toggle piece at current rowIndex/colIndex
+            //recurse this function to check next row's spots
+            var disallowedCopy = disallowed.slice();
+            disallowedCopy.push(colIndex);
+            solutionCount = checkSol( board, rowIndex + 1, disallowedCopy, solutionCount );
+            //toggle piece off
+            board.togglePiece(rowIndex, colIndex);
+          } else {
+            board.togglePiece(rowIndex, colIndex);
+          }
+
+        } 
+      }
+    }
+
+    return solutionCount;
+  };
+
+  if (n === 0 || n === 1) {
+    solutionCount = 1;
+  } else {
+    for (var colIndex = 0; colIndex < n; colIndex++) {
+      rowIndex = 0;
+      newBoard.togglePiece(0, colIndex);
+      solutionCount = checkSol(newBoard, rowIndex + 1, [colIndex], solutionCount);
+      newBoard.togglePiece(0, colIndex);
+    }
+  }
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
